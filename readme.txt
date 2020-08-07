@@ -1,0 +1,1 @@
+sending info over to server gives 500 error becauase of async function issue

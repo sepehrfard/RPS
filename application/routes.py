@@ -21,10 +21,9 @@ def index():
     return render_template("index.html", index=True)
 
 
-@app.route("/img", methods=["GET", "POST"])
+@app.route("/img", methods=["POST", "GET"])
 async def get_img():
-    # body = await request.form()
-    # binary_data = a2b_base64(body["imgBase64"])
-    # img = open_image(BytesIO(binary_data))
-    # print(img[0])
-    print("got it ")
+    body = await equest.form()
+    binary_data = a2b_base64(body["imgBase64"])
+    img = open_image(BytesIO(binary_data))
+    return await Response(jsonify({"img": 10}), status=200)

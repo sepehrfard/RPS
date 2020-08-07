@@ -6,10 +6,10 @@ const context = canvas.getContext("2d");
 let trackButton = document.getElementById("trackbutton");
 let updateNote = document.getElementById("updatenote");
 
-var script = document.createElement('script');
-script.src = 'https://code.jquery.com/jquery-3.4.1.min.js';
-script.type = 'text/javascript';
-document.getElementsByTagName('head')[0].appendChild(script);
+// var script = document.createElement('script');
+// script.src = 'https://code.jquery.com/jquery-3.4.1.min.js';
+// script.type = 'text/javascript';
+// document.getElementsByTagName('head')[0].appendChild(script);
 
 let isVideo = false;
 let model = null;
@@ -82,18 +82,18 @@ function runDetection() {
     }
     model.renderPredictions(predictions, canvas, context, video);
     var canv = document.createElement('canvas');
-
     var context1 = canv.getContext('2d');
     context1.drawImage(video, 0, 0, video.width, video.height);
     var dataURL = canv.toDataURL();
-    jQuery.ajax({
+    // console.log(dataURL)
+    $.ajax({
       type: "POST",
       url: "/img",
       data: {
         imgBase64: dataURL.split(',')[1]
       }
-    }).done(function () {
-      console.log('Sent');
+    }).done(function (o) {
+      console.log(o['img']);
     })
     if (isVideo) {
       requestAnimationFrame(runDetection);
