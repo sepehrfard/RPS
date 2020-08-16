@@ -81,20 +81,37 @@ function runDetection() {
       // setInterval(takepicture(predictions[0].bbox, video), 10000);
     }
     model.renderPredictions(predictions, canvas, context, video);
+
+
     var canv = document.createElement('canvas');
     var context1 = canv.getContext('2d');
     context1.drawImage(video, 0, 0, video.width, video.height);
-    var dataURL = canv.toDataURL();
-    // console.log(dataURL)
-    $.ajax({
-      type: "POST",
-      url: "/img",
-      data: {
-        imgBase64: dataURL.split(',')[1]
+    var img = canv.toDataURL('image/png').split(',')[1];
+
+    var xhr = new XMLHttpRequest();
+    data = JSON.stringify({ 'image': img });
+
+    xhr.onreadystatechange = function (err) {
+      if (xhr.readyState == 4 && xhr.status == 200) {
+        console.log(xhr.responseText);
+      } else {
+        console.log(err);
       }
-    }).done(function (o) {
-      console.log(o['img']);
-    })
+    }
+    xhr.open("POST", "/img");
+    xhr.setRequestHeader('Content-type', 'application/json');
+    xhr.send(data)
+    // console.log(data)
+    // console.log(dataURL)
+    // $.ajax({
+    //   type: "POST",
+    //   url: "/img",
+    //   contentType: 'application/json;charset=UTF-8',
+    //   data: {
+    //     'imgBase64': dataURL.split(',')[1]
+    //   }
+    // }).done(function (o) {
+
     if (isVideo) {
       requestAnimationFrame(runDetection);
     }
