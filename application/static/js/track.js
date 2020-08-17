@@ -1,22 +1,16 @@
 
 const video = document.getElementById("myvideo");
 const canvas = document.getElementById("video-canvas");
-var picCanv = document.getElementById("pic-canvas");
 const context = canvas.getContext("2d");
 let trackButton = document.getElementById("trackbutton");
 let updateNote = document.getElementById("updatenote");
-
-// var script = document.createElement('script');
-// script.src = 'https://code.jquery.com/jquery-3.4.1.min.js';
-// script.type = 'text/javascript';
-// document.getElementsByTagName('head')[0].appendChild(script);
 
 let isVideo = false;
 let model = null;
 
 const modelParams = {
   flipHorizontal: true,   // flip e.g for video
-  maxNumBoxes: 20,        // maximum number of boxes to detect
+  maxNumBoxes: 1,        // maximum number of boxes to detect
   iouThreshold: 0.5,      // ioU threshold for non-max suppression
   scoreThreshold: 0.8,    // confidence threshold for predictions.
 }
@@ -44,25 +38,6 @@ function img_crop(bbox) {
   return dims
 }
 
-function clearphoto() {
-  var context = canvas.getContext('2d');
-  context.fillStyle = "#AAA";
-  context.fillRect(0, 0, canvas.width, canvas.height);
-
-  var data = canvas.toDataURL('image/png');
-  picCanv.setAttribute('src', data);
-}
-
-function takepicture(bbox, video) {
-  var context = canvas.getContext('2d');
-  dims = img_crop(bbox);
-  context.drawImage(video, bbox[0], dims[1], dims[2], dims[3], 0, 0, 128, 128);
-  if (bbox) {
-    const data = canvas.toDataURL('image/jpeg');
-    sendImage(data);
-  }
-}
-
 function toggleVideo() {
   if (!isVideo) {
     updateNote.innerText = "Starting video"
@@ -75,64 +50,42 @@ function toggleVideo() {
   }
 }
 
-function runDetection() {
+async function runDetection() {
   model.detect(video).then(predictions => {
     if (predictions[0] && predictions[0].score > .8) {
-      // setInterval(takepicture(predictions[0].bbox, video), 10000);
+      var canv = document.createElement('canvas');
+      canv.width = predictions[0].bbox[2]
+      canv.height = predictions[0].bbox[3]
+      var context1 = canv.getContext('2d');
+      context1.drawImage(canvas, predictions[0].bbox[0], predictions[0].bbox[1],
+        predictions[0].bbox[2], predictions[0].bbox[3], 0, 0, predictions[0].bbox[2], predictions[0].bbox[3]);
+      var img = canv.toDataURL('image/png').split(',')[1];
+      console.log(predictions)
+      sendImage(img)
     }
     model.renderPredictions(predictions, canvas, context, video);
-
-
-    var canv = document.createElement('canvas');
-    var context1 = canv.getContext('2d');
-    context1.drawImage(video, 0, 0, video.width, video.height);
-    var img = canv.toDataURL('image/png').split(',')[1];
-
-    var xhr = new XMLHttpRequest();
-    data = JSON.stringify({ 'image': img });
-
-    xhr.onreadystatechange = function (err) {
-      if (xhr.readyState == 4 && xhr.status == 200) {
-        console.log(xhr.responseText);
-      } else {
-        console.log(err);
-      }
-    }
-    xhr.open("POST", "/img");
-    xhr.setRequestHeader('Content-type', 'application/json');
-    xhr.send(data)
-    // console.log(data)
-    // console.log(dataURL)
-    // $.ajax({
-    //   type: "POST",
-    //   url: "/img",
-    //   contentType: 'application/json;charset=UTF-8',
-    //   data: {
-    //     'imgBase64': dataURL.split(',')[1]
-    //   }
-    // }).done(function (o) {
-
     if (isVideo) {
       requestAnimationFrame(runDetection);
     }
   });
 }
 
-// async function sendImage(data) {
-//   var xhttp = new XMLHttpRequest();
-//   var path = "http://127.0.0.1:5000/img";
-//   var img = JSON.stringify({"image": data});
-//   xhttp.onreadystatechange = function (err) {
-//     if (xhttp.readyState == 4 && xhttp.status == 200){
-//       console.log(xhttp.responseText);
-//     }
-//     else {
-//       console.log(err);
-//     }
-//   }
-//   xhttp.open("POST", path, true);
-//   xhttp.send(img);
-// }
+async function sendImage(img) {
+
+  var xhr = new XMLHttpRequest();
+  data = JSON.stringify({ 'image': img });
+
+  xhr.onreadystatechange = function (err) {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      console.log(xhr.responseText);
+    } else {
+      console.log(err);
+    }
+  }
+  xhr.open("POST", "/img");
+  xhr.setRequestHeader('Content-type', 'application/json');
+  xhr.send(data)
+}
 
 // Load the model.
 handTrack.load(modelParams).then(lmodel => {

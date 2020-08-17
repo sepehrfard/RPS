@@ -4,8 +4,10 @@
 <head>
   <meta charset="utf-8">
   <title>Rock Paper Scissors</title>
+  <link rel="stylesheet" href="https://unpkg.com/carbon-components@latest/css/carbon-components.css" />
   <link rel="stylesheet" href="static/css/style.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
 </head>
 
 <body>
@@ -25,14 +27,15 @@
     <p id="action-message">Make your move</p>
   </div>
 
-  <div class="camera">
-    <div class="mb10">
-      <button onclick="toggleVideo()" id="trackbutton" class="bx--btn bx--btn--secondary" type="button">
-        Toggle Video
-      </button>
-      <div id="updatenote" class="updatenote mt10"> loading model ..</div>
-    </div>
-    <video class="videobox canvasbox" id="myvideo"></video>
+  <div class="mb10">
+    <button onclick="toggleVideo()" id="trackbutton" class="bx--btn bx--btn--secondary" type="button">
+      Play
+    </button>
+    <div id="updatenote" class="updatenote mt10"> loading model ..</div>
+  </div>
+
+  <div class='video-feed'>
+    <video class="hidden canvasbox" id="myvideo"></video>
     <canvas id="video-canvas" class="border canvasbox"></canvas>
   </div>
 

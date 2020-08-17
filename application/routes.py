@@ -12,6 +12,10 @@ from flask import (
 )
 from binascii import a2b_base64
 from flask_restx import Resource
+from io import BytesIO
+import base64
+from PIL import Image
+import os
 
 
 @app.route("/")
@@ -32,8 +36,12 @@ def index():
 def get_img():
     if request.method == "POST":
         data = request.json["image"]
-        binary_data = a2b_base64(data)
-        img = open_image(BytesIO(binary_data))
+        predict(data)
         return jsonify({"status": "ok"})
     return render_template("img_page.html")
 
+
+def predict(img):
+    im = Image.open(BytesIO(base64.b64decode(img)))
+    count = len(os.listdir("images/"))
+    im.save("images/image_{}.png".format(count), "PNG")
