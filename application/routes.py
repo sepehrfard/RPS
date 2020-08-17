@@ -14,8 +14,16 @@ from binascii import a2b_base64
 from flask_restx import Resource
 from io import BytesIO
 import base64
-from PIL import Image
+from application import classify
+from fastai.vision import *
+
+# from PIL import Image
 import os
+
+
+def load_model():
+    learner = load_learner("classifier", "rps.pkl")
+    return learner
 
 
 @app.route("/")
@@ -34,14 +42,17 @@ def index():
 
 
 def get_img():
+    model = load_model()
+    pred = "none"
     if request.method == "POST":
         data = request.json["image"]
-        predict(data)
+        pred = get_pred(data, model)
         return jsonify({"status": "ok"})
-    return render_template("img_page.html")
+    return render_template("img_page.html", pred=pred)
 
 
-def predict(img):
-    im = Image.open(BytesIO(base64.b64decode(img)))
-    count = len(os.listdir("images/"))
-    im.save("images/image_{}.png".format(count), "PNG")
+def get_pred(img, model):
+    im = open_image(BytesIO(base64.b64decode(img)))
+    pred = classify.predict(im, model)
+    print(pred)
+    return pred
