@@ -100,25 +100,6 @@ header > h1 {
   transition: all .3s ease;
 }
 
-.video-feed{
-  text-align: center;
-}
-
-.mb10{
-  text-align: center;
-}
-
-.canvasbox{
-  border-radius: 3px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 450px;
-  height: 338px;
-  border-bottom: 3px solid #0063FF;
-  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 #00000030;
-  align-items: center;
-}
-
 .choice:hover {
   background: white;
 }
@@ -132,7 +113,25 @@ header > h1 {
   display: none;
 }
 
+.video-feed{
+  text-align: center;
+}
 
+.mb10{
+  text-align: center;
+}
+
+
+.canvasbox{
+  border-radius: 3px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 450px;
+  height: 338px;
+  border-bottom: 3px solid #0063FF;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 #00000030;
+  align-items: center;
+}
 
 #action-message{
   text-align: center;

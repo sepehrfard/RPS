@@ -8,6 +8,8 @@ let updateNote = document.getElementById("updatenote");
 let isVideo = false;
 let model = null;
 
+var pred = null;
+
 const modelParams = {
   flipHorizontal: true,   // flip e.g for video
   maxNumBoxes: 1,        // maximum number of boxes to detect
@@ -53,15 +55,7 @@ function toggleVideo() {
 async function runDetection() {
   model.detect(video).then(predictions => {
     if (predictions[0] && predictions[0].score > .8) {
-      var canv = document.createElement('canvas');
-      canv.width = predictions[0].bbox[2]
-      canv.height = predictions[0].bbox[3]
-      var context1 = canv.getContext('2d');
-      context1.drawImage(canvas, predictions[0].bbox[0], predictions[0].bbox[1],
-        predictions[0].bbox[2], predictions[0].bbox[3], 0, 0, predictions[0].bbox[2], predictions[0].bbox[3]);
-      var img = canv.toDataURL('image/png').split(',')[1];
-      console.log(predictions)
-      sendImage(img)
+      setTimeout(setInterval(takeFrame(predictions), 1000), 1000)
     }
     model.renderPredictions(predictions, canvas, context, video);
     if (isVideo) {
@@ -70,14 +64,26 @@ async function runDetection() {
   });
 }
 
+function takeFrame(predictions) {
+  var canv = document.createElement('canvas');
+  canv.width = predictions[0].bbox[2]
+  canv.height = predictions[0].bbox[3]
+  var context1 = canv.getContext('2d');
+  context1.drawImage(canvas, predictions[0].bbox[0], predictions[0].bbox[1],
+    predictions[0].bbox[2], predictions[0].bbox[3], 0, 0, predictions[0].bbox[2], predictions[0].bbox[3]);
+  var img = canv.toDataURL('image/png').split(',')[1];
+  // console.log(predictions)
+  sendImage(img)
+  console.log(pred)
+
+}
 async function sendImage(img) {
 
+  data = JSON.stringify({ 'image': img })
   var xhr = new XMLHttpRequest();
-  data = JSON.stringify({ 'image': img });
-
   xhr.onreadystatechange = function (err) {
     if (xhr.readyState == 4 && xhr.status == 200) {
-      console.log(xhr.responseText);
+      console.log(xhr.responseText)
     } else {
       console.log(err);
     }
@@ -85,8 +91,16 @@ async function sendImage(img) {
   xhr.open("POST", "/img");
   xhr.setRequestHeader('Content-type', 'application/json');
   xhr.send(data)
+  // return xhr.response
+  // xhr.onreadystatechange = processRequest;
+  // function processRequest(e) {
+  //   if (xhr.readyState == 4 && xhr.status == 200) {
+  //     // alert(xhr.responseText.headers.Host);
+  //     var response1 = JSON.parse(xhr.responseText);
+  //     console.log(response1)
+  //   }
+  // }
 }
-
 // Load the model.
 handTrack.load(modelParams).then(lmodel => {
   // detect objects in the image.

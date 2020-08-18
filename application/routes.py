@@ -4,6 +4,7 @@ from flask import (
     request,
     json,
     Response,
+    make_response,
     redirect,
     flash,
     url_for,
@@ -47,12 +48,14 @@ def get_img():
     if request.method == "POST":
         data = request.json["image"]
         pred = get_pred(data, model)
-        return jsonify({"status": "ok"})
+        labels = ["paper", "rock", "scissor"]
+        response = {"pred": pred.obj}
+        return jsonify(response)
     return render_template("img_page.html", pred=pred)
+    # return jsonify({"pred": pred}), 200
 
 
 def get_pred(img, model):
     im = open_image(BytesIO(base64.b64decode(img)))
     pred = classify.predict(im, model)
-    print(pred)
     return pred
