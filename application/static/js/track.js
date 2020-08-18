@@ -72,35 +72,41 @@ function takeFrame(predictions) {
   context1.drawImage(canvas, predictions[0].bbox[0], predictions[0].bbox[1],
     predictions[0].bbox[2], predictions[0].bbox[3], 0, 0, predictions[0].bbox[2], predictions[0].bbox[3]);
   var img = canv.toDataURL('image/png').split(',')[1];
-  // console.log(predictions)
-  sendImage(img)
-  console.log(pred)
 
+  fetch(`${window.origin}/img`, {
+    method: "POST",
+    body: JSON.stringify({ 'img': img }),
+    headers: new Headers({
+      "content-type": "application/json"
+    })
+  })
+    .then(function (res) {
+      if (res.status !== 200) {
+        console.log("ERROR NOT SENDING CORRECTLY")
+        return;
+      }
+      res.json().then(function (data) {
+        console.log(data)
+      })
+    }).catch(function (err) {
+      console.log("FETCH ERROR" + err);
+    })
 }
-async function sendImage(img) {
 
-  data = JSON.stringify({ 'image': img })
-  var xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = function (err) {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      console.log(xhr.responseText)
-    } else {
-      console.log(err);
-    }
-  }
-  xhr.open("POST", "/img");
-  xhr.setRequestHeader('Content-type', 'application/json');
-  xhr.send(data)
-  // return xhr.response
-  // xhr.onreadystatechange = processRequest;
-  // function processRequest(e) {
-  //   if (xhr.readyState == 4 && xhr.status == 200) {
-  //     // alert(xhr.responseText.headers.Host);
-  //     var response1 = JSON.parse(xhr.responseText);
-  //     console.log(response1)
-  //   }
-  // }
-}
+// async function sendImage(img) {
+//   data = JSON.stringify({ 'image': img })
+//   var xhr = new XMLHttpRequest();
+//   xhr.onreadystatechange = function (err) {
+//     if (xhr.readyState == 4 && xhr.status == 200) {
+//       console.log(xhr.responseText)
+//     } else {
+//       console.log(err);
+//     }
+//   }
+//   xhr.open("POST", "/img");
+//   xhr.setRequestHeader('Content-type', 'application/json');
+//   xhr.send(data)
+// }
 // Load the model.
 handTrack.load(modelParams).then(lmodel => {
   // detect objects in the image.

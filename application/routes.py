@@ -35,24 +35,12 @@ def index():
 
 
 @app.route("/img", methods=["POST", "GET"])
-# async def get_img():
-#     body = await request.form()
-#     binary_data = a2b_base64(body["imgBase64"])
-#     img = open_image(BytesIO(binary_data))
-#     return await Response(jsonify({"img": 10}), status=200)
-
-
 def get_img():
     model = load_model()
-    pred = "none"
-    if request.method == "POST":
-        data = request.json["image"]
-        pred = get_pred(data, model)
-        labels = ["paper", "rock", "scissor"]
-        response = {"pred": pred.obj}
-        return jsonify(response)
-    return render_template("img_page.html", pred=pred)
-    # return jsonify({"pred": pred}), 200
+    req = request.get_json()
+    pred = get_pred(req["img"], model)
+    res = make_response(jsonify({"pred": pred.obj}))
+    return res
 
 
 def get_pred(img, model):
