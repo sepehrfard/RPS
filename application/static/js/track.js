@@ -14,7 +14,7 @@ const modelParams = {
   flipHorizontal: true,   // flip e.g for video
   maxNumBoxes: 1,        // maximum number of boxes to detect
   iouThreshold: 0.5,      // ioU threshold for non-max suppression
-  scoreThreshold: 0.8,    // confidence threshold for predictions.
+  scoreThreshold: 0.6,    // confidence threshold for predictions.
 }
 
 function startVideo() {
@@ -54,10 +54,13 @@ function toggleVideo() {
 
 async function runDetection() {
   model.detect(video).then(predictions => {
-    if (predictions[0] && predictions[0].score > .8) {
-      setTimeout(setInterval(takeFrame(predictions), 1000), 1000)
-    }
+    // if (predictions[0] && predictions[0].score > .8) {
+    //   setInterval(takeFrame(predictions), 1000)
+    // }
     model.renderPredictions(predictions, canvas, context, video);
+    if (predictions[0] && predictions[0].score > .8) {
+      setInterval(takeFrame(predictions), 2500)
+    }
     if (isVideo) {
       requestAnimationFrame(runDetection);
     }
@@ -79,19 +82,38 @@ function takeFrame(predictions) {
     headers: new Headers({
       "content-type": "application/json"
     })
-  })
-    .then(function (res) {
-      if (res.status !== 200) {
-        console.log("ERROR NOT SENDING CORRECTLY")
-        return;
-      }
-      res.json().then(function (data) {
-        console.log(data)
-      })
-    }).catch(function (err) {
-      console.log("FETCH ERROR" + err);
+  }).then(function (res) {
+    if (res.status !== 200) {
+      console.log("ERROR NOT SENDING CORRECTLY")
+      return;
+    }
+    res.json().then(function (data) {
+      var choice = document.getElementById(data['pred']);
+      // console.log(choice)
+      changeChoice(pred, choice)
+      choice.style.background = "white"
+      console.log(data['pred'])
+      pred = data['pred']
+
     })
+  }).catch(function (err) {
+    console.log("FETCH ERROR" + err);
+  })
 }
+
+function changeChoice(pred, choice) {
+  console.log("-----")
+  console.log("pred " + pred)
+  console.log("choice " + choice.id)
+  console.log(typeof pred)
+  console.log(typeof choice.id)
+  console.log("-----")
+  if (pred && pred !== choice.id) {
+    document.getElementById(pred).style.background = "transparent"
+    console.log("change of pred " + pred)
+  }
+}
+
 
 // async function sendImage(img) {
 //   data = JSON.stringify({ 'image': img })

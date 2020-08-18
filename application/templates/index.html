@@ -24,15 +24,10 @@
 
   <div class="result">
     <p>Pick a hand to play.</p>
-    <p id="action-message">Make your move</p>
+    <!-- <p id="action-message">Make your move</p> -->
   </div>
 
-  <div class="mb10">
-    <button onclick="toggleVideo()" id="trackbutton" class="bx--btn bx--btn--secondary" type="button">
-      Play
-    </button>
-    <div id="updatenote" class="updatenote mt10"> loading model ..</div>
-  </div>
+
 
   <div class='video-feed'>
     <video class="hidden canvasbox" id="myvideo"></video>
@@ -52,6 +47,15 @@
       <img id="pic" src="static/images/scissor.png" alt="">
     </div>
   </div>
+
+  <div class="mb10">
+    <button onclick="toggleVideo()" id="trackbutton" class="bx--btn bx--btn--secondary" type="button">
+      Play
+    </button>
+    <div id="updatenote" class="updatenote mt10"> loading model ..</div>
+  </div>
+
+
 
   <script src="static/js/app.js" charset="utf-8"></script>
 
