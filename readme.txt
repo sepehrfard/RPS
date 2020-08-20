@@ -13,12 +13,9 @@ take load off of model classifing too many frames.
 
 Things to do:
 --------------------------------------------------------------------------------------
-1 - Emoji Hilighting done
-    - Should implement a waiting counter to start detecting once its down to 0
-    to limit all mistakes made classifying radom images until the correct hand. 
-    - or maybe timer as you keep your hand in position to make sure of accurate result. 
-    
-2 - Timed detection, to decrease lag between detections
+1 - cant get the timer to work correctly with the reponses of prediction 
+    - look into correctly writing promise to reset countdown 
+    - some how need to reset from finding correct detections
 
-3 - leader board
+2 - leader board
 

@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Rock Paper Scissors</title>
+  <title>Rock! Paper! Scissors!</title>
   <link rel="stylesheet" href="https://unpkg.com/carbon-components@latest/css/carbon-components.css" />
   <link rel="stylesheet" href="static/css/style.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -12,19 +12,25 @@
 
 <body>
   <header>
-    <h1>Rock Paper Scissors</h1>
+    <h1>Rock! Paper! Scissors!</h1>
   </header>
 
   <div class="score-board">
-    <div id="user-label" class="badge">User</div>
+    <div id="user-label" class="badge">You</div>
     <div id="score-label" class="badge">Score</div>
     <div id="computer-label" class="badge"> Ai </div>
-    <span id="user-score">0</span>:<span id="computer-score">0</span>
+    <div class="result">
+      <div id="user-score">0</div>
+      <div id="computer-score">0</div>
+      <p>Pick a hand to play.</p>
+    </div>
+
   </div>
 
-  <div class="result">
-    <p>Pick a hand to play.</p>
-    <!-- <p id="action-message">Make your move</p> -->
+
+
+  <div id="countdown">
+    Time
   </div>
 
 

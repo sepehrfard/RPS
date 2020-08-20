@@ -1,14 +1,32 @@
-
 const video = document.getElementById("myvideo");
 const canvas = document.getElementById("video-canvas");
 const context = canvas.getContext("2d");
 let trackButton = document.getElementById("trackbutton");
 let updateNote = document.getElementById("updatenote");
 
+
+// figure out how to do timer correctly 
+// var timeLeft = 3;
+// var countElem = document.getElementById('countdown');
+// var timerId = setInterval(countdown, 1000);
+
+// function countdown() {
+//   if (timeLeft == -1) {
+//     clearTimeout(timerId);
+//   } else {
+//     countElem.innerHTML = timeLeft;
+//     console.log(timeLeft)
+//     timeLeft--;
+//   }
+// }
+
 let isVideo = false;
 let model = null;
 
 var pred = null;
+var timeLim = 0;
+var minDur = 200;
+var maxDur = 700;
 
 const modelParams = {
   flipHorizontal: true,   // flip e.g for video
@@ -25,19 +43,10 @@ function startVideo() {
       updateNote.innerText = "Video started. Now tracking"
       isVideo = true
       runDetection()
-      // video.hide()
     } else {
       updateNote.innerText = "Please enable video"
     }
   });
-}
-
-function img_crop(bbox) {
-  const width = bbox[2] - bbox[0];
-  const height = bbox[1] - bbox[3];
-  let dims = [bbox[0] - 10, bbox[1] - 10, width, height];
-
-  return dims
 }
 
 function toggleVideo() {
@@ -54,17 +63,21 @@ function toggleVideo() {
 
 async function runDetection() {
   model.detect(video).then(predictions => {
-    // if (predictions[0] && predictions[0].score > .8) {
-    //   setInterval(takeFrame(predictions), 1000)
-    // }
+
     model.renderPredictions(predictions, canvas, context, video);
-    if (predictions[0] && predictions[0].score > .8) {
-      setInterval(takeFrame(predictions), 2500)
+
+    var curTime = performance.now();
+    var duration = curTime - timeLim;
+    if (predictions[0] && duration > minDur && timeLeft == 0) {
+      takeFrame(predictions)
+      console.log("time: " + (curTime - timeLim));
+      timeLim = performance.now();
     }
-    if (isVideo) {
-      requestAnimationFrame(runDetection);
-    }
-  });
+  })
+  if (isVideo) {
+    requestAnimationFrame(runDetection);
+  }
+
 }
 
 function takeFrame(predictions) {
@@ -89,11 +102,12 @@ function takeFrame(predictions) {
     }
     res.json().then(function (data) {
       var choice = document.getElementById(data['pred']);
-      // console.log(choice)
       changeChoice(pred, choice)
       choice.style.background = "white"
-      console.log(data['pred'])
+      console.log("Pred: " + data['pred'])
       pred = data['pred']
+      var choices = { "rock": "r", "paper": "p", "scissor": "s" }
+      game(choices[pred])
 
     })
   }).catch(function (err) {
@@ -102,33 +116,11 @@ function takeFrame(predictions) {
 }
 
 function changeChoice(pred, choice) {
-  console.log("-----")
-  console.log("pred " + pred)
-  console.log("choice " + choice.id)
-  console.log(typeof pred)
-  console.log(typeof choice.id)
-  console.log("-----")
   if (pred && pred !== choice.id) {
     document.getElementById(pred).style.background = "transparent"
-    console.log("change of pred " + pred)
   }
 }
 
-
-// async function sendImage(img) {
-//   data = JSON.stringify({ 'image': img })
-//   var xhr = new XMLHttpRequest();
-//   xhr.onreadystatechange = function (err) {
-//     if (xhr.readyState == 4 && xhr.status == 200) {
-//       console.log(xhr.responseText)
-//     } else {
-//       console.log(err);
-//     }
-//   }
-//   xhr.open("POST", "/img");
-//   xhr.setRequestHeader('Content-type', 'application/json');
-//   xhr.send(data)
-// }
 // Load the model.
 handTrack.load(modelParams).then(lmodel => {
   // detect objects in the image.
