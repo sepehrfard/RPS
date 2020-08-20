@@ -1,3 +1,6 @@
+
+
+
 const video = document.getElementById("myvideo");
 const canvas = document.getElementById("video-canvas");
 const context = canvas.getContext("2d");
@@ -6,23 +9,67 @@ let updateNote = document.getElementById("updatenote");
 
 
 // figure out how to do timer correctly 
-// var timeLeft = 3;
-// var countElem = document.getElementById('countdown');
-// var timerId = setInterval(countdown, 1000);
+var timeLeft = 3;
+var countElem = document.getElementById('countdown');
+var topChoices = null;
 
-// function countdown() {
-//   if (timeLeft == -1) {
-//     clearTimeout(timerId);
-//   } else {
-//     countElem.innerHTML = timeLeft;
-//     console.log(timeLeft)
-//     timeLeft--;
+class HandPicks {
+  constructor() {
+    this.map = new Map([['rock', 0], ['paper', 0], ['scissor', 0]]);
+    this.choices = ['rock', 'paper', 'scissor']
+  }
+
+  add(value) {
+    var count = this.map.get(value)
+    this.map.set(value, ++count);
+  }
+
+  topChoice() {
+    var picks = [this.map[this.choices[0]], this.map[this.choices[1]], this.map[this.choices[2]]];
+    var pick = this.choices[picks.indexOf(Math.max(picks))];
+    return pick;
+  }
+
+  getAll() {
+    return this.map
+  }
+}
+
+function countdown() {
+  var timerId = setInterval(countdown, 1000);
+  topChoices = new HandPicks();
+  if (timeLeft == -1) {
+    clearTimeout(timerId);
+  } else {
+    countElem.innerHTML = timeLeft;
+    console.log(topChoices.getAll())
+    console.log(timeLeft)
+    timeLeft--;
+  }
+}
+
+// function makeList() {
+//   var map = new Map();
+//   return map;
+// }
+
+// function addList(value) {
+//   if (topChoices.has(value)) {
+//     topChoices[value]++;
 //   }
+//   else {
+//     topChoices[value] = 1;
+//   }
+// }
+
+// function topChoice() {
+//   picks = [topChoices]
+//   var topIdx = arr.index
+
 // }
 
 let isVideo = false;
 let model = null;
-
 var pred = null;
 var timeLim = 0;
 var minDur = 200;
@@ -32,7 +79,7 @@ const modelParams = {
   flipHorizontal: true,   // flip e.g for video
   maxNumBoxes: 1,        // maximum number of boxes to detect
   iouThreshold: 0.5,      // ioU threshold for non-max suppression
-  scoreThreshold: 0.6,    // confidence threshold for predictions.
+  scoreThreshold: 0.9,    // confidence threshold for predictions.
 }
 
 function startVideo() {
@@ -43,6 +90,7 @@ function startVideo() {
       updateNote.innerText = "Video started. Now tracking"
       isVideo = true
       runDetection()
+      countdown()
     } else {
       updateNote.innerText = "Please enable video"
     }
@@ -52,7 +100,7 @@ function startVideo() {
 function toggleVideo() {
   if (!isVideo) {
     updateNote.innerText = "Starting video"
-    startVideo();
+    startVideo()
   } else {
     updateNote.innerText = "Stopping video"
     handTrack.stopVideo(video)
@@ -63,12 +111,10 @@ function toggleVideo() {
 
 async function runDetection() {
   model.detect(video).then(predictions => {
-
     model.renderPredictions(predictions, canvas, context, video);
-
     var curTime = performance.now();
     var duration = curTime - timeLim;
-    if (predictions[0] && duration > minDur && timeLeft == 0) {
+    if (predictions[0] && duration > minDur) {
       takeFrame(predictions)
       console.log("time: " + (curTime - timeLim));
       timeLim = performance.now();
@@ -101,6 +147,8 @@ function takeFrame(predictions) {
       return;
     }
     res.json().then(function (data) {
+      topChoices.add(data['pred'])
+
       var choice = document.getElementById(data['pred']);
       changeChoice(pred, choice)
       choice.style.background = "white"
@@ -118,6 +166,8 @@ function takeFrame(predictions) {
 function changeChoice(pred, choice) {
   if (pred && pred !== choice.id) {
     document.getElementById(pred).style.background = "transparent"
+    console.log(topChoices.getAll())
+    console.log(topChoices.topChoice())
   }
 }
 
