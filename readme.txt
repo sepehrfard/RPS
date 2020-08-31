@@ -11,15 +11,15 @@ take load off of model classifing too many frames.
 
 5. corresponding emoji is highlighted with hand prediction, timing a little off 
 
-6. Added timer, still havent written how to design countdown loop after the first execution
-    last second of countdown handpicks class is created, map with counter to, it logs in all the preds of last second 
-    and the max pick is the hand of choice to be evaluated for the game. 
+6. Timer integrated with the game using seperated functions. 
+
+7. Dictionary for topchoice fully working, countdown is restarted by pressing any key
+    - However, count down very quick cant see the actuall second decrementing jumps to 1 or 0
 
 
 Things to do:
 --------------------------------------------------------------------------------------
-1 - Timer loop to be implemented after the first round and define a trigger for the next loop
-    - pause game once coutndown is done and show the result 
-    - last second top choice is the hand to pick for the game eval 
-    - try pulling ui triggers for hand out of fetch request 
+1 - Correct choice is not getting sent out to the game function after pressing key, fix the current prediction
+2 - changeChoice() doesn't unhighlight the prev choice. 
+3 - Correct timing for takeframe() between the last second and time 0 to determine choice. 
 

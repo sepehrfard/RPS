@@ -6,27 +6,31 @@ const canvas = document.getElementById("video-canvas");
 const context = canvas.getContext("2d");
 let trackButton = document.getElementById("trackbutton");
 let updateNote = document.getElementById("updatenote");
+document.addEventListener('keypress', restartTimer)
 
 
 // figure out how to do timer correctly 
 var timeLeft = 3;
 var countElem = document.getElementById('countdown');
 var topChoices = null;
+var prevChoice = null;
+var live = true;
 
 class HandPicks {
   constructor() {
-    this.map = new Map([['rock', 0], ['paper', 0], ['scissor', 0]]);
+    this.map = { 'rock': 0, 'paper': 0, 'scissor': 0 }
     this.choices = ['rock', 'paper', 'scissor']
   }
 
   add(value) {
-    var count = this.map.get(value)
-    this.map.set(value, ++count);
+    var count = this.map[value]
+    this.map[value]++;
   }
 
   topChoice() {
     var picks = [this.map[this.choices[0]], this.map[this.choices[1]], this.map[this.choices[2]]];
-    var pick = this.choices[picks.indexOf(Math.max(picks))];
+    var max = Math.max.apply(Math, picks.map((i) => i));
+    var pick = this.choices[picks.indexOf(max)];
     return pick;
   }
 
@@ -40,6 +44,7 @@ function countdown() {
   topChoices = new HandPicks();
   if (timeLeft == -1) {
     clearTimeout(timerId);
+    // resolve('OK')
   } else {
     countElem.innerHTML = timeLeft;
     console.log(topChoices.getAll())
@@ -47,26 +52,6 @@ function countdown() {
     timeLeft--;
   }
 }
-
-// function makeList() {
-//   var map = new Map();
-//   return map;
-// }
-
-// function addList(value) {
-//   if (topChoices.has(value)) {
-//     topChoices[value]++;
-//   }
-//   else {
-//     topChoices[value] = 1;
-//   }
-// }
-
-// function topChoice() {
-//   picks = [topChoices]
-//   var topIdx = arr.index
-
-// }
 
 let isVideo = false;
 let model = null;
@@ -89,8 +74,21 @@ function startVideo() {
     if (status) {
       updateNote.innerText = "Video started. Now tracking"
       isVideo = true
-      runDetection()
       countdown()
+      runDetection()
+      console.log(topChoices.topChoice())
+
+
+
+      console.log('Got in ')
+      pred = topChoices.topChoice()
+      var choice = document.getElementById(data['pred']);
+      changeChoice(pred, choice)
+      choice.style.background = "white"
+      var choices = { "rock": "r", "paper": "p", "scissor": "s" }
+      game(choices[pred])
+
+      console.log(topChoices.topChoice())
     } else {
       updateNote.innerText = "Please enable video"
     }
@@ -114,17 +112,38 @@ async function runDetection() {
     model.renderPredictions(predictions, canvas, context, video);
     var curTime = performance.now();
     var duration = curTime - timeLim;
-    if (predictions[0] && duration > minDur) {
+    if (predictions[0] && duration > minDur && timeLeft < 2) {
       takeFrame(predictions)
       console.log("time: " + (curTime - timeLim));
       timeLim = performance.now();
+      // console.log(topChoices.topChoice())
+    }
+    if (timeLeft == -1 && live) {
+      runRound(topChoices.topChoice())
+      live = false;
     }
   })
   if (isVideo) {
     requestAnimationFrame(runDetection);
   }
-
 }
+
+function runRound(userChoice) {
+  var choices = { "rock": "r", "paper": "p", "scissor": "s" }
+  game(choices[userChoice]);
+  changeChoice(prevChoice, userChoice)
+  countElem.innerText = "To play again press any key"
+}
+
+function restartTimer() {
+  timeLeft = 3
+  countdown()
+  live = true;
+  topChoices = new HandPicks();
+}
+
+
+
 
 function takeFrame(predictions) {
   var canv = document.createElement('canvas');
@@ -147,15 +166,15 @@ function takeFrame(predictions) {
       return;
     }
     res.json().then(function (data) {
-      topChoices.add(data['pred'])
+      topChoices.add(String(data['pred']))
 
-      var choice = document.getElementById(data['pred']);
-      changeChoice(pred, choice)
-      choice.style.background = "white"
-      console.log("Pred: " + data['pred'])
-      pred = data['pred']
-      var choices = { "rock": "r", "paper": "p", "scissor": "s" }
-      game(choices[pred])
+      // var choice = document.getElementById(data['pred']);
+      // changeChoice(pred, choice)
+      // choice.style.background = "white"
+      // console.log("Pred: " + data['pred'])
+      // pred = data['pred']
+      // var choices = { "rock": "r", "paper": "p", "scissor": "s" }
+      // game(choices[pred])
 
     })
   }).catch(function (err) {
@@ -163,12 +182,15 @@ function takeFrame(predictions) {
   })
 }
 
-function changeChoice(pred, choice) {
-  if (pred && pred !== choice.id) {
-    document.getElementById(pred).style.background = "transparent"
-    console.log(topChoices.getAll())
-    console.log(topChoices.topChoice())
+function changeChoice(prevChoice, userChoice) {
+  var userChoice = document.getElementById(userChoice);
+  userChoice.style.background = "white";
+
+  if (prevChoice && prevChoice !== userChoice.id) {
+    document.getElementById(prevChoice).style.background = "transparent"
+    console.log(prevChoice)
   }
+  prevChoice = userChoice;
 }
 
 // Load the model.
