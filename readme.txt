@@ -13,13 +13,14 @@ take load off of model classifing too many frames.
 
 6. Timer integrated with the game using seperated functions. 
 
-7. Dictionary for topchoice fully working, countdown is restarted by pressing any key
-    - However, count down very quick cant see the actuall second decrementing jumps to 1 or 0
+7. CountDown works pefectly, issue had to do with mutltiple intervals needed to be cleared instead of just one. 
 
 
 Things to do:
 --------------------------------------------------------------------------------------
-1 - Correct choice is not getting sent out to the game function after pressing key, fix the current prediction
-2 - changeChoice() doesn't unhighlight the prev choice. 
-3 - Correct timing for takeframe() between the last second and time 0 to determine choice. 
+1 - Finetune exact timing for takeFrame to get the best results for model
+2 - Brain storm a better way to start the game instead of press a Key
+3 - leader board room
+4 - better way to implement priority queue
+5 - Retrain model on better data, use flask to save images for labeled data. 
 

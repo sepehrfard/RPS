@@ -1,6 +1,3 @@
-
-
-
 const video = document.getElementById("myvideo");
 const canvas = document.getElementById("video-canvas");
 const context = canvas.getContext("2d");
@@ -10,11 +7,15 @@ document.addEventListener('keypress', restartTimer)
 handChoices = ["rock", "paper", "scissor"]
 
 // figure out how to do timer correctly 
-var timeLeft = 5;
+var timeLen = 3;
+var timeLeft = timeLen;
+var timeClear = 1000;
 var countElem = document.getElementById('countdown');
 var topChoices = null;
 var prevChoice = null;
 var live = true;
+var timerId = -1;
+
 
 class HandPicks {
   constructor() {
@@ -40,13 +41,20 @@ class HandPicks {
 }
 
 function countdown() {
-  var timerId = setInterval(countdown, 1000);
-  if (timeLeft == -1) {
-    clearTimeout(timerId);
+  if (timeLeft == 0) {
+    for (i = timerId; i < timeClear; i++) {
+      clearInterval(i);
+    }
     checkPred()
     countElem.innerText = "To play again press any key"
   } else {
+    console.log("Interval id before: " + timerId);
     countElem.innerHTML = timeLeft;
+    for (i = timerId; i < timeClear; i++) {
+      clearInterval(i);
+    }
+    timerId = setInterval(countdown, 1000);
+    // console.log("Interval id after: " + timerId);
     timeLeft--;
   }
 }
@@ -61,7 +69,7 @@ var maxDur = 700;
 const modelParams = {
   flipHorizontal: true,   // flip e.g for video
   maxNumBoxes: 1,        // maximum number of boxes to detect
-  iouThreshold: 0.5,      // ioU threshold for non-max suppression
+  iouThreshold: 0.7,      // ioU threshold for non-max suppression
   scoreThreshold: 0.9,    // confidence threshold for predictions.
 }
 
@@ -96,14 +104,9 @@ function startVideo() {
 async function runDetection() {
   model.detect(video).then(predictions => {
     model.renderPredictions(predictions, canvas, context, video);
-    console.log("timeLeft: " + timeLeft)
     if (predictions[0] && timeLeft < 2) {
       takeFrame(predictions)
     }
-    if (timeLeft == -1) {
-      return
-    }
-
 
   })
   if (isVideo) {
@@ -118,17 +121,16 @@ function runRound(userChoice) {
 }
 
 function restartTimer() {
-  timeLeft = 5
+  timeLeft = timeLen;
   countdown()
   live = true;
   topChoices = new HandPicks();
 }
 
 function checkPred() {
-  if (timeLeft == -1 && live) {
+  if (timeLeft == 0 && live) {
     console.log(topChoices.getAll())
     runRound(topChoices.topChoice())
-
     live = false;
   }
 }
@@ -164,7 +166,6 @@ function takeFrame(predictions) {
 function changeChoice(userChoice) {
   for (hand in handChoices) {
     if (userChoice != handChoices[hand]) {
-      console.log("chage CHoice not: " + handChoices[hand])
       document.getElementById(handChoices[hand]).style.background = "transparent";
     }
     else {
