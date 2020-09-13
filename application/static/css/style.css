@@ -12,7 +12,7 @@ body {
 header {
   background-color: #45328D;
   margin: auto;
-  padding: 40px;
+  padding: 15px;
 
 }
 
@@ -25,7 +25,7 @@ header > h1 {
 
 .score-board {
   margin: 20px auto;
-  border: 3px solid white;
+  border: 10px solid white;
   text-align: center;
   padding: 30px 20px;
   border-radius: 4px;
@@ -57,7 +57,6 @@ header > h1 {
 
 .score-board .result #user-score{
   float: left;
-  bottom: 20px;
   font-size: 80px;
 }
 
@@ -88,7 +87,6 @@ header > h1 {
 .reuslt{
   font-size: 40px;
   color: white;
-  ;
   
 }
 
@@ -99,6 +97,7 @@ header > h1 {
   color: white;
   font-size: 40px;
   margin: 20px;
+  margin-top: 10px;
 }
 .choices{
   margin: 20px;
@@ -115,7 +114,7 @@ header > h1 {
   font-family: Asap, sans-serif;
   color: white;
   font-size: 40px;
-  margin: 20px;
+  margin: 30px;
 
 }
 
@@ -156,8 +155,8 @@ header > h1 {
   border-radius: 3px;
   margin-left: auto;
   margin-right: auto;
-  width: 450px;
-  height: 338px;
+  width: 675px;
+  height: 507px;
   border-bottom: 3px solid #DB5C4F;
   box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 #00000030;
   align-items: center;
@@ -167,8 +166,9 @@ header > h1 {
   margin:2px;
   color: white;
   font: inherit;
-   font-size: 100%;
-   vertical-align: baseline;
+  font-size: 100%;
+  vertical-align: baseline;
+  border-radius: 4px;
 }
 .bx--btn--secondary {
   color: #ffffff;
@@ -176,6 +176,7 @@ header > h1 {
   border-color: transparent;
   border-style: solid;
   border-width: 1px;
+  border-radius: 4px;
 }
 
 .bx--btn {
@@ -192,12 +193,12 @@ header > h1 {
   justify-content: space-between;
   max-width: 500rem;
   min-height: 3rem;
-  margin: 2px;
+  margin-bottom: 5px;
   padding: calc(0.875rem - 3px) 40px calc(0.875rem - 3px) 40px;
   text-align: -webkit-center;
   text-decoration: none;
   vertical-align: baseline;
-  border-radius: 0;
+  border-radius: 5px;
   outline: none;
   cursor: pointer;
   transition: all 70ms cubic-bezier(0, 0, 0.38, 0.9);
