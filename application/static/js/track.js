@@ -4,7 +4,7 @@ const context = canvas.getContext("2d");
 let trackButton = document.getElementById("trackbutton");
 let updateNote = document.getElementById("updatenote");
 document.addEventListener('keypress', restartTimer)
-handChoices = ["rock", "paper", "scissor"]
+handChoices = ["rock", "paper", "scissors"]
 
 // figure out how to do timer correctly 
 var timeLen = 3;
@@ -15,12 +15,13 @@ var topChoices = null;
 var prevChoice = null;
 var live = true;
 var timerId = -1;
+var lastPred = null;
 
 
 class HandPicks {
   constructor() {
-    this.map = { 'rock': 0, 'paper': 0, 'scissor': 0 }
-    this.choices = ['rock', 'paper', 'scissor']
+    this.map = { 'rock': 0, 'paper': 0, 'scissors': 0 }
+    this.choices = ['rock', 'paper', 'scissors']
   }
 
   add(value) {
@@ -104,7 +105,7 @@ function startVideo() {
 async function runDetection() {
   model.detect(video).then(predictions => {
     model.renderPredictions(predictions, canvas, context, video);
-    if (predictions[0] && timeLeft < 2) {
+    if (predictions[0] && timeLeft && live) {
       takeFrame(predictions)
     }
 
@@ -115,7 +116,10 @@ async function runDetection() {
 }
 
 function runRound(userChoice) {
-  var choices = { "rock": "r", "paper": "p", "scissor": "s" }
+  var choices = { "rock": "r", "paper": "p", "scissors": "s" }
+  if (userChoice !== lastPred) {
+    userChoice = lastPred
+  }
   game(choices[userChoice]);
   changeChoice(userChoice)
 }
@@ -157,6 +161,7 @@ function takeFrame(predictions) {
     }
     res.json().then(function (data) {
       topChoices.add(String(data['pred']))
+      lastPred = String(data['pred'])
     })
   }).catch(function (err) {
     console.log("FETCH ERROR" + err);

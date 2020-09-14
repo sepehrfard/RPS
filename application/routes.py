@@ -18,12 +18,12 @@ import base64
 from application import classify
 from fastai.vision import *
 
-# from PIL import Image
+from PIL import Image
 import os
 
 
 def load_model():
-    learner = load_learner("classifier", "rps.pkl")
+    learner = load_learner("classifier", "rps_final.pkl")
     return learner
 
 
@@ -34,11 +34,14 @@ def index():
     return render_template("index.html", index=True)
 
 
+model = load_model()
+
+
 @app.route("/img", methods=["POST", "GET"])
 def get_img():
-    model = load_model()
     req = request.get_json()
     pred = get_pred(req["img"], model)
+    print(pred)
     res = make_response(jsonify({"pred": pred.obj}))
     return res
 

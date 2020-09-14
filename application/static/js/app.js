@@ -6,7 +6,7 @@ const scoreBoard_div = document.querySelector(".score-board");
 const result_p = document.querySelector(".result > p");
 const rock_div = document.getElementById("rock");
 const paper_div = document.getElementById("paper");
-const scissor_div = document.getElementById("scissor");
+const scissor_div = document.getElementById("scissors");
 
 function randInt() {
   return Math.floor(Math.random() * 3)
